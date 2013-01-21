@@ -11,12 +11,12 @@
 (function($) {
 
 	// Initialization
-	$.fn.printPreview = function() {
+	$.fn.printPreview = function(options) {
 		this.each(function() {
 			$(this).bind('click', function(e) {
 			    e.preventDefault();
 			    if (!$('#print-modal').length) {
-			        $.printPreview.loadPrintPreview();
+			        $.printPreview.loadPrintPreview(options);
 			    }
 			});
 		});
@@ -24,9 +24,11 @@
 	};
 
     // Private functions
-    var mask, size, print_modal, print_controls;
+    var mask, size, print_modal, print_controls, options;
     $.printPreview = {
-        loadPrintPreview: function() {
+        loadPrintPreview: function(options) {
+            options = options || {};
+
             // Declare DOM objects
             print_modal = $('<div id="print-modal"></div>');
             print_controls = $('<div id="print-modal-controls">' +
@@ -57,8 +59,16 @@
             print_frame_ref.close();
 
             // Grab contents and apply stylesheet
-            var $iframe_head = $('head link[media*=print], head style[media*=print], head link[media=all]').clone(),
+            var $iframe_head = $('head *[media*=print], head *[media=all]').clone(),
                 $iframe_body = $('body > *:not(#print-modal):not(script)').clone();
+
+            // Extend CSS
+            if (typeof options.extendedCss !== 'undefined') {
+                $.each(options.extendedCss, function() {
+                    Array.prototype.push.apply($iframe_head, $('<link type="text/css" rel="stylesheet" href="' + this + '" >'));
+                })
+            }
+
             $iframe_head.each(function() {
                 $(this).attr('media', 'all');
             });
@@ -70,7 +80,7 @@
                 $('body > *:not(#print-modal):not(script)').clone().each(function() {
                     $('body', print_frame_ref).append(this.outerHTML);
                 });
-                $('head link[media*=print], head style[media*=print], head link[media=all]').each(function() {
+                $('head *[media*=print], head *[media=all]').each(function() {
                     $('head', print_frame_ref).append($(this).clone().attr('media', 'all')[0].outerHTML);
                 });
             }
@@ -120,8 +130,12 @@
             // Bind closure
             $('a', print_controls).bind('click', function(e) {
                 e.preventDefault();
-                if ($(this).hasClass('print')) { window.print(); }
-                else { $.printPreview.distroyPrintPreview(); }
+                if ($(this).hasClass('print')) {
+                    window.frames['print-frame'].print()
+                }
+                else {
+                    $.printPreview.distroyPrintPreview();
+                }
             });
     	},
 
