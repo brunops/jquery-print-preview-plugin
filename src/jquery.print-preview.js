@@ -134,12 +134,12 @@
                     window.frames['print-frame'].print()
                 }
                 else {
-                    $.printPreview.distroyPrintPreview();
+                    $.printPreview.destroyPrintPreview();
                 }
             });
     	},
 
-    	distroyPrintPreview: function() {
+    	destroyPrintPreview: function() {
     	    print_controls.fadeOut(100);
     	    print_modal.animate({ top: $(window).scrollTop() - $(window).height(), opacity: 1}, 400, 'linear', function(){
     	        print_modal.remove();
@@ -177,11 +177,11 @@
 			});
 
 			mask.bind("click.printPreview.mask", function(e)  {
-				$.printPreview.distroyPrintPreview();
+				$.printPreview.destroyPrintPreview();
 			});
 
 			$(document).bind("keydown.printPreview.mask", function(e) {
-			    if (e.keyCode == 27) {  $.printPreview.distroyPrintPreview(); }
+			    if (e.keyCode == 27) {  $.printPreview.destroyPrintPreview(); }
 			});
         },
 
