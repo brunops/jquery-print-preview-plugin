@@ -111,6 +111,11 @@
                 print_frame.height($('body', print_frame.contents())[0].scrollHeight);
             });
 
+            // Perform some change inside iframe
+            if (typeof options.onLoad === 'function') {
+                options.onLoad(print_frame_ref);
+            }
+
             // Position modal
             starting_position = $(window).height() + $(window).scrollTop();
             var css = {
