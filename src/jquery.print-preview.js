@@ -59,8 +59,11 @@
             print_frame_ref.close();
 
             // Grab contents and apply stylesheet
-            var $iframe_head = $('head *[media*=print], head *[media=all]').clone(),
+            var $iframe_head = [],
                 $iframe_body = $('body > *:not(#print-modal):not(script)').clone();
+            if (typeof options.cloneStyles === 'undefined' || options.cloneStyles) {
+                $iframe_head = $('head *[media*=print], head *[media=all]').clone();
+            }
 
             // Extend CSS
             if (typeof options.extendedCss !== 'undefined') {
@@ -69,7 +72,7 @@
                 })
             }
 
-            $iframe_head.each(function() {
+            $.each($iframe_head, function() {
                 $(this).attr('media', 'all');
             });
             if (!$.browser.msie && !($.browser.version < 7) ) {
@@ -77,10 +80,10 @@
                 $('body', print_frame_ref).append($iframe_body);
             }
             else {
-                $('body > *:not(#print-modal):not(script)').clone().each(function() {
+                $.each($iframe_body, function() {
                     $('body', print_frame_ref).append(this.outerHTML);
                 });
-                $('head *[media*=print], head *[media=all]').each(function() {
+                $.each($iframe_head, function() {
                     $('head', print_frame_ref).append($(this).clone().attr('media', 'all')[0].outerHTML);
                 });
             }
